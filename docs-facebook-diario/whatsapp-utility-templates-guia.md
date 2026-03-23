@@ -1,8 +1,11 @@
 # WhatsApp Utility Templates — Guia Completo para Mensagens Dinâmicas
 
+> **Última atualização:** 2026-03-23
+> **Todas as informações foram verificadas contra fontes oficiais da Meta e BSPs autorizados.**
+
 ## Contexto
 
-Ao usar a **WhatsApp Business API (Cloud API)**, mensagens proativas (business-initiated) precisam de **templates aprovados pela Meta**. Templates de **utility** são mais baratos que marketing e servem para: confirmações, lembretes, atualizações de pedido, alertas de conta, etc.
+Ao usar a **WhatsApp Business API (Cloud API)**, mensagens proativas (business-initiated) precisam de **templates aprovados pela Meta**. Templates de **utility** são significativamente mais baratos que marketing e servem para: confirmações, lembretes, atualizações de pedido, alertas de conta, etc.
 
 Este guia foca em como enviar **conteúdo dinâmico de tamanho variável** (ex: lista de lembretes que muda por usuário) dentro de um único template utility.
 
@@ -12,26 +15,53 @@ Este guia foca em como enviar **conteúdo dinâmico de tamanho variável** (ex: 
 
 ### 1.1 Categorias de template
 
-| Categoria | Uso | Custo |
+| Categoria | Uso | Custo relativo |
 |---|---|---|
-| **Utility** | Transações, lembretes, atualizações, alertas | Mais barato |
-| **Marketing** | Promoções, ofertas, novidades | Mais caro (~2x utility) |
-| **Authentication** | OTPs / códigos de verificação | Variável |
+| **Utility** | Transações, lembretes, atualizações, alertas | Mais barato (~$0.0068/msg no BR) |
+| **Marketing** | Promoções, ofertas, novidades | ~9x mais caro (~$0.0625/msg no BR) |
+| **Authentication** | OTPs / códigos de verificação | Similar ao utility |
+| **Service** | Respostas a mensagens do usuário | **Grátis (desde Nov/2024)** |
 
-> **A Meta classifica o template automaticamente** com base no conteúdo. Se o texto parecer promocional, será classificado como marketing mesmo que você selecione utility.
+> **Fonte (categorias):** [Meta — Pricing on the WhatsApp Business Platform](https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing)
+> *"Marketing, Utility, Authentication, and Service conversations each have different rates."*
 
-### 1.2 Limites técnicos do template
+> **Fonte (valores BR):** [Rate Card via flowcall.co](https://www.flowcall.co/blog/whatsapp-business-api-pricing-2026) — Marketing: $0.0625, Utility: $0.0068 por mensagem (Brasil).
 
-| Recurso | Limite |
-|---|---|
-| Caracteres no **body** | **1024 chars** (texto fixo + variáveis preenchidas) |
-| Caracteres no **header** (texto) | 60 chars |
-| Caracteres no **footer** | 60 chars |
-| Número de variáveis por seção | Até **99** (`{{1}}` a `{{99}}`) |
-| Quebra de linha | Suportada via `\n` |
-| Formatação | `*negrito*`, `_itálico_`, `~tachado~`, `` ```código``` `` |
+> **⚠️ IMPORTANTE — Modelo de cobrança mudou em Jul/2025:** Desde 1º de julho de 2025, o WhatsApp migrou de **cobrança por conversa** para **cobrança por mensagem entregue**.
+> **Fonte:** [Meta — Updates to Pricing](https://developers.facebook.com/docs/whatsapp/pricing/updates-to-pricing/)
+> *"Charges apply when a message is delivered [...] based on who the message is sent to and the category of the message."*
 
-### 1.3 O que conta no limite de 1024
+### 1.2 Classificação automática e reclassificação
+
+A Meta classifica o template automaticamente com base no conteúdo. **Desde 9 de abril de 2025**, a Meta pode reclassificar templates **sem aviso prévio**.
+
+> **Fonte:** [Meta — New Template Guidelines](https://developers.facebook.com/docs/whatsapp/updates-to-pricing/new-template-guidelines/)
+> *"For any business detected abusing the template categorization system, WhatsApp will no longer provide 24-hour notice if a utility template should be marketing. The category will be updated with no advance notice."*
+
+> **Fonte:** [yCloud — Template Category Guidelines Update](https://www.ycloud.com/blog/whatsapp-api-message-template-category-guidelines-update/)
+> Definição atualizada (Jul/2025): para ser utility, o template deve ser **(a)** não-promocional, E **(b)** específico a uma ação/transação do usuário OU essencial/crítico para o usuário.
+
+### 1.3 Limites técnicos do template
+
+| Recurso | Limite | Fonte |
+|---|---|---|
+| Caracteres no **body** | **1024 chars** (texto fixo + variáveis preenchidas) | Wati.io (BSP oficial), 8x8, Webex Connect |
+| Caracteres no **header** (texto) | 60 chars | 8x8 Developer Portal, indigitall docs |
+| Caracteres no **footer** | 60 chars | 8x8 Developer Portal, indigitall docs |
+| Variáveis no **header** | Máx **1** | 8x8 Developer Portal |
+| Variáveis no **body** | Sem limite de contagem (limitado pelos 1024 chars) | 8x8 Developer Portal |
+| Variáveis no **footer** | **0** (texto estático) | 8x8 Developer Portal |
+| Botões | Máx **10** total | Múltiplas fontes BSP |
+
+> **Fonte (body 1024):** [Wati.io — Template Message Guidelines](https://support.wati.io/en/articles/11463458-whatsapp-template-message-guidelines-naming-formatting-and-translations)
+> *"Marketing, Utility and Authentication templates can have up to 1024 characters."*
+
+> **Fonte (header/footer):** [8x8 Developer Portal — Template Components Reference](https://developer.8x8.com/connect/docs/whatsapp/template-components-reference/)
+> *"Header Max 60 characters [...] Footer Max Length: 60 characters"*
+
+> **Nota:** A documentação oficial da Meta (developers.facebook.com/docs/whatsapp/*) é renderizada via JavaScript SPA e não pode ser extraída diretamente. Os limites acima são confirmados por múltiplos BSPs oficiais (Wati.io, 8x8, Infobip, Webex Connect) que espelham as restrições da API da Meta.
+
+### 1.4 O que conta no limite de 1024
 
 O limite é do **body renderizado final**, ou seja:
 
@@ -53,29 +83,87 @@ Templates têm variáveis **fixas** (`{{1}}`, `{{2}}`). Não existe loop ou vari
 
 Montar toda a lista como **uma única string** antes de enviar, e injetar numa variável só.
 
-**Template aprovado:**
+### ⚠️ RESTRIÇÃO CRÍTICA: `\n` NÃO funciona em variáveis de template
+
+A API do WhatsApp **rejeita caracteres de quebra de linha (`\n`) e tabulação dentro de parâmetros/variáveis** de template. O erro retornado é:
+
+> *"Param text cannot have new-line/tab characters or more than 4 consecutive spaces"*
+
+> **Fontes:**
+> - [n8n Community — WhatsApp API line break](https://community.n8n.io/t/whatsapp-api-line-break/200174)
+> - [Manychat Community — Issue with Line Breaks in WhatsApp Templates](https://community.manychat.com/general-q-a-43/issue-with-line-breaks-in-custom-fields-via-whatsapp-templates-4780)
+> - [Zapier Community — Line breaks not working](https://community.zapier.com/troubleshooting-99/line-breaks-not-working-in-whatsapp-notifications-causing-error-100-47030)
+
+### 2.3 Workarounds para a restrição de `\n`
+
+**Opção A — Múltiplas variáveis com quebras de linha no texto fixo do template:**
+
+Crie o template com as quebras de linha JÁ NO TEXTO FIXO:
 
 ```
 Olá {{1}}, seus lembretes para hoje:
 
 {{2}}
+{{3}}
+{{4}}
+{{5}}
+{{6}}
+{{7}}
+{{8}}
+{{9}}
+{{10}}
 
-Responda se precisar de ajuda.
+Responda se precisar alterar algo.
 ```
 
-- `{{1}}` = nome do usuário
-- `{{2}}` = string com toda a lista já formatada
+Cada `{{N}}` recebe um item. Se o user tem 3 itens, preencha `{{4}}` a `{{10}}` com string vazia `""`.
 
-**Exemplo de `{{2}}` preenchido:**
+**Limitação:** Número máximo de itens é fixo (definido no template). Se definiu 9 slots e o user tem 15, não cabe.
+
+**Opção B — Separador inline (sem quebra de linha):**
+
+Use um separador visual dentro de uma variável só:
 
 ```
-1. Reunião com cliente às 9h
-2. Enviar relatório mensal
-3. Revisar contrato do fornecedor
-4. Ligar para suporte técnico
+Olá {{1}}, seus lembretes para hoje: {{2}}
+
+Responda se precisar alterar algo.
 ```
 
-O WhatsApp renderiza as quebras de linha normalmente.
+No Code Node:
+```javascript
+const lembretes = $input.all();
+const texto = lembretes
+  .map((item, i) => `${i + 1}. ${item.json.descricao}`)
+  .join(' | ');
+
+return [{ json: { listaFormatada: texto } }];
+```
+
+Resultado: `1. Reunião às 9h | 2. Enviar relatório | 3. Revisar contrato`
+
+**Limitação:** Menos legível, mas funciona sem restrições.
+
+**Opção C — Emojis como separadores visuais:**
+
+```javascript
+const texto = lembretes
+  .map((item, i) => `${i + 1}. ${item.json.descricao}`)
+  .join(' ✦ ');
+```
+
+**Opção D (RECOMENDADA) — Template com variável + convite para resposta:**
+
+Envie um template curto com resumo, e convide o user a responder. Quando ele responde, a **janela de serviço** abre e você pode mandar mensagens free-form **com quebra de linha e sem template**.
+
+Template:
+```
+Olá {{1}}, você tem {{2}} lembrete(s) para hoje. Responda "ver" para receber a lista completa.
+```
+
+Quando o user responder "ver" → janela de serviço abre → envie mensagem free-form com a lista formatada com `\n` normalmente.
+
+> **Esta é a melhor opção** porque combina economia (1 template utility barato) + experiência boa (lista formatada com quebras de linha na resposta grátis).
 
 ---
 
@@ -85,7 +173,7 @@ O WhatsApp renderiza as quebras de linha normalmente.
 
 **Problema:** Usuário com muitos itens ou itens com descrições longas estoura o limite.
 
-**Solução — Truncar com aviso:**
+**Solução — Truncar com aviso (para Opção B/C):**
 
 ```javascript
 // Code Node no n8n
@@ -94,28 +182,25 @@ const lembretes = $input.all();
 let texto = '';
 
 for (let i = 0; i < lembretes.length; i++) {
-  const linha = `${i + 1}. ${lembretes[i].json.descricao}\n`;
+  const item = `${i + 1}. ${lembretes[i].json.descricao}`;
+  const separador = i > 0 ? ' | ' : '';
 
-  if ((texto + linha).length > MAX_CHARS) {
+  if ((texto + separador + item).length > MAX_CHARS) {
     const restante = lembretes.length - i;
-    texto += `\n... e mais ${restante} item(ns). Responda "ver tudo" para a lista completa.`;
+    texto += ` ... e mais ${restante} item(ns). Responda "ver tudo" para a lista completa.`;
     break;
   }
-  texto += linha;
+  texto += separador + item;
 }
 
 return [{ json: { listaFormatada: texto.trim() } }];
 ```
 
-> **Dica:** Ao truncar, convide o usuário a responder. Isso abre a **janela de serviço (24h)** e você pode mandar o restante como mensagem free-form **gratuita**.
-
-**Solução alternativa — Dividir em múltiplas mensagens:**
-
-Se o usuário realmente precisa ver tudo, divida em blocos de ~900 chars. Porém, **cada envio de template é uma conversa cobrada** se não houver janela aberta. Use com cuidado.
+> **Dica:** Ao truncar, convide o usuário a responder. Isso abre a **janela de serviço (24h)** e você pode mandar o restante como mensagem free-form **gratuita** (desde Nov/2024, conversas de serviço são grátis e ilimitadas).
 
 ### 3.2 Template classificado como Marketing pela Meta
 
-**Problema:** Você submete como utility mas a Meta reclassifica como marketing (mais caro).
+**Problema:** Você submete como utility mas a Meta reclassifica como marketing (~9x mais caro).
 
 **Como evitar — Regras para aprovação como Utility:**
 
@@ -134,29 +219,24 @@ Se o usuário realmente precisa ver tudo, divida em blocos de ~900 chars. Porém
 4. **Seja direto e informativo**
    - O template deve **informar**, não **persuadir**
 
+> **Fonte:** [Meta — Template Categorization](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-categorization)
+> Definição oficial de utility: *"Messages typically triggered by a user action [...] non-promotional [...] specific to or requested by a user [...] or critical to a user."*
+
 **Exemplo de template que passa como Utility:**
 
 ```
-Olá {{1}}, aqui está seu resumo diário:
-
-{{2}}
-
-Se houver algum erro, responda esta mensagem.
+Olá {{1}}, você tem {{2}} lembrete(s) para hoje. Responda "ver" para a lista completa.
 ```
 
 **Exemplo que será reclassificado como Marketing:**
 
 ```
-Olá {{1}}! 🎉 Confira as novidades que separamos para você:
-
-{{2}}
-
-Não perca! Acesse agora e aproveite.
+Olá {{1}}! 🎉 Confira as novidades que separamos para você: {{2}} Não perca!
 ```
 
 ### 3.3 Variável vazia / usuário sem itens
 
-**Problema:** Se o user não tem lembretes, enviar o template com `{{2}}` vazio fica estranho.
+**Problema:** Se o user não tem lembretes, enviar o template com variável vazia fica estranho.
 
 **Solução:** No n8n, usar um nó **IF** antes do envio:
 
@@ -166,45 +246,27 @@ IF → $json.listaFormatada is not empty
   → Não: não envia (ou envia template diferente)
 ```
 
-### 3.4 Quebra de linha não renderiza
+### 3.4 Formatação no body do template
 
-**Problema:** Às vezes `\n` é enviado como texto literal em vez de quebra de linha.
+**O que funciona no texto fixo do template:**
 
-**Causas comuns:**
+| Formato | Sintaxe |
+|---|---|
+| **Negrito** | `*texto*` |
+| *Itálico* | `_texto_` |
+| ~~Tachado~~ | `~texto~` |
+| `Monospace` | `` ```texto``` `` |
 
-- Escapamento duplo: `\\n` em vez de `\n`
-- Enviar via JSON sem parsear a string corretamente
+> **Fonte:** [WhatsApp Help Center — How to format your messages](https://faq.whatsapp.com/539178204879377/?cms_platform=web)
 
-**Solução no Code Node:**
+**Restrições importantes:**
 
-```javascript
-// Garanta que é um \n real, não escaped
-const texto = lembretes
-  .map((item, i) => `${i + 1}. ${item.json.descricao}`)
-  .join('\n');
+- **Header e footer:** não permitem emojis, formatação markdown, nem quebras de linha.
+  > **Fonte:** [Infobip — WhatsApp Template Compliance](https://www.infobip.com/docs/whatsapp/compliance/template-compliance)
+  > *"Do not include emojis, markup, or newline characters in headers or footers"*
 
-// NÃO faça JSON.stringify() no texto antes de passar pro template
-return [{ json: { listaFormatada: texto } }];
-```
-
-### 3.5 Formatação rica limitada
-
-**Problema:** WhatsApp templates suportam apenas formatação básica.
-
-**O que funciona:**
-
-```
-*negrito*
-_itálico_
-~tachado~
-```
-
-**O que NÃO funciona:**
-
-- Markdown completo (headers, links em markdown, etc.)
-- HTML
-- Bullet points (•) — use numeração ou hífen (-)
-- Emojis funcionam mas evite no template utility (pode ser reclassificado)
+- **Emojis no body:** permitidos em utility e marketing (marketing: máx 10 emojis). Proibidos em authentication.
+  > **Fonte:** [Wati.io — Template Guidelines](https://support.wati.io/en/articles/11463458-whatsapp-template-message-guidelines-naming-formatting-and-translations)
 
 ---
 
@@ -219,31 +281,71 @@ _itálico_
    - **Categoria:** `Utility`
    - **Nome:** `lembrete_diario` (snake_case, sem espaços)
    - **Idioma:** `Português (BR)`
-5. No **Body**, escreva:
+5. No **Body**, escreva (usando a Opção D recomendada):
 
 ```
-Olá {{1}}, seus lembretes para hoje:
-
-{{2}}
-
-Responda se precisar alterar algo.
+Olá {{1}}, você tem {{2}} lembrete(s) para hoje. Responda "ver" para receber a lista completa.
 ```
 
 6. Adicione **exemplos** para cada variável (obrigatório):
    - `{{1}}` → `João`
-   - `{{2}}` → `1. Reunião às 9h\n2. Enviar relatório\n3. Revisar contrato`
-7. Submeta para aprovação (geralmente leva minutos a poucas horas)
+   - `{{2}}` → `3`
+7. Submeta para aprovação
+
+> **Tempo de aprovação:** A maioria é aprovada em **minutos a poucas horas** via revisão automatizada. Templates flagados para revisão manual podem levar até **24 horas**.
+> **Fonte:** [Infobip — Template Compliance](https://www.infobip.com/docs/whatsapp/compliance/template-compliance)
+> *"Approval is usually immediate if your business is verified, but may take up to 24 hours otherwise."*
 
 ### 4.2 Dicas para aprovação rápida
 
 - Forneça exemplos realistas e claros
 - Mantenha tom informativo, não promocional
-- Inclua frase de saída: "responda PARAR para não receber mais"
 - Não use CAPS LOCK no texto fixo
+- **Para marketing:** inclua o botão oficial de opt-out da Meta (obrigatório). Para utility: não é necessário opt-out.
+
+> **Fonte (opt-out):** [Meta — Get opt-in for WhatsApp](https://developers.facebook.com/documentation/business-messaging/whatsapp/getting-opt-in) e [WhatsApp Business Policy](https://business.whatsapp.com/policy)
 
 ---
 
-## 5. Fluxo Completo no n8n
+## 5. Janela de Conversa e Custos
+
+### 5.1 Regras da janela de serviço
+
+| Regra | Detalhe |
+|---|---|
+| **Quem abre a janela de serviço** | Somente o **usuário** ao enviar uma mensagem |
+| **Duração** | 24 horas (reseta a cada nova mensagem do user) |
+| **Dentro da janela** | Mensagens free-form + templates liberados |
+| **Fora da janela** | Somente templates aprovados |
+| **Custo da conversa de serviço** | **Grátis e ilimitado** (desde Nov/2024) |
+
+> **Fonte:** [Meta — Send Messages](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/send-messages)
+> *"Whenever a WhatsApp user messages you or calls you, a 24-hour timer called a customer service window starts."*
+> *"When a customer service window is open [...] you can send any type of message to the user."*
+> *"If a window is not open [...] you can only send template messages."*
+
+### 5.2 Utility template dentro da janela de serviço = GRÁTIS
+
+> **Fonte:** [Meta — Updates to Pricing](https://developers.facebook.com/docs/whatsapp/pricing/updates-to-pricing/)
+> *"Utility template messages sent in response to a user's message (within an open customer service window) became free."*
+
+### 5.3 Conversas de serviço agora são ilimitadas e grátis
+
+Antes de Nov/2024, havia um limite de 1.000 conversas de serviço grátis por mês. **Isso foi removido.**
+
+> **Fonte:** [Meta — Updates to Pricing](https://developers.facebook.com/docs/whatsapp/pricing/updates-to-pricing/)
+> Desde Nov/2024: *"Service conversations are free for all businesses"* — sem limite mensal.
+
+### 5.4 Entry-point gratuito (72h)
+
+Quando o user inicia conversa via **Click-to-WhatsApp Ad** ou **botão CTA da página do Facebook**, a janela gratuita é de **72 horas** (não 24).
+
+> **Fonte:** [WhatsApp Business Platform Pricing](https://business.whatsapp.com/products/platform-pricing)
+> *"When customers send you a message from an Ad that clicks to WhatsApp or Facebook Page call-to-action button, for the following 3 days (72 hours), all of your messages are not charged."*
+
+---
+
+## 6. Fluxo Completo no n8n (Opção D — Recomendada)
 
 ```
 Schedule Trigger (ex: todo dia 8h)
@@ -255,10 +357,7 @@ Banco/API ── busca users ativos com lembretes
 SplitInBatches ── 1 user por vez
     │
     ▼
-Banco/API ── busca lembretes DO user
-    │
-    ▼
-Code Node ── monta string formatada (com truncamento)
+Banco/API ── busca lembretes DO user (+ COUNT)
     │
     ▼
 IF ── tem lembretes?
@@ -267,15 +366,33 @@ IF ── tem lembretes?
   Sim       Não → (ignora)
     │
     ▼
-HTTP Request ── POST para WhatsApp Cloud API
+HTTP Request ── POST template: "Você tem X lembretes. Responda 'ver'."
 ```
 
-### 5.1 HTTP Request para envio do template
+**Fluxo secundário (webhook de resposta):**
+
+```
+Webhook ── user respondeu "ver"
+    │
+    ▼
+Banco/API ── busca lembretes do user
+    │
+    ▼
+Code Node ── monta lista com \n (FUNCIONA em free-form!)
+    │
+    ▼
+HTTP Request ── POST mensagem free-form (text, não template)
+```
+
+### 6.1 HTTP Request — Envio do template (proativo)
 
 **URL:**
 ```
-https://graph.facebook.com/v21.0/SEU_PHONE_NUMBER_ID/messages
+https://graph.facebook.com/v25.0/SEU_PHONE_NUMBER_ID/messages
 ```
+
+> **Nota:** A versão atual da Graph API é **v25.0** (Fev 2026). Versões anteriores como v21.0 estão desatualizadas.
+> **Fonte:** [Graph API Changelog](https://developers.facebook.com/docs/graph-api/changelog)
 
 **Body (JSON):**
 
@@ -299,7 +416,7 @@ https://graph.facebook.com/v21.0/SEU_PHONE_NUMBER_ID/messages
           },
           {
             "type": "text",
-            "text": "{{$json.listaFormatada}}"
+            "text": "{{$json.totalLembretes}}"
           }
         ]
       }
@@ -308,18 +425,66 @@ https://graph.facebook.com/v21.0/SEU_PHONE_NUMBER_ID/messages
 }
 ```
 
+> **Fonte (estrutura JSON):** [Meta — Send Message Templates](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-message-templates/)
+> Parâmetros são **posicionais**: primeiro objeto = `{{1}}`, segundo = `{{2}}`, etc.
+
+### 6.2 HTTP Request — Mensagem free-form (após user responder)
+
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "{{$json.telefone}}",
+  "type": "text",
+  "text": {
+    "body": "{{$json.listaFormatada}}"
+  }
+}
+```
+
+> Aqui o `\n` **funciona normalmente** porque é uma mensagem de texto livre, não um parâmetro de template.
+
 ---
 
-## 6. Resumo de Limites
+## 7. Resumo de Limites (Verificado)
 
-| Item | Valor |
-|---|---|
-| Body total renderizado | 1024 chars |
-| Margem segura para variáveis | ~900 chars |
-| Quebra de linha | `\n` (funciona) |
-| Formatação | `*negrito*`, `_itálico_`, `~tachado~` |
-| Variáveis por seção | Até 99 |
-| Custo utility vs marketing | Utility ~50% mais barato |
-| Aprovação do template | Minutos a horas |
-| Janela após envio proativo | 24h, mas SÓ permite templates |
-| Janela de serviço (free-form) | Só se o USER responder primeiro |
+| Item | Valor | Fonte |
+|---|---|---|
+| Body total renderizado | 1024 chars | Wati.io, 8x8, Webex Connect |
+| Header (texto) | 60 chars | 8x8, indigitall |
+| Footer | 60 chars (sem variáveis) | 8x8, indigitall |
+| `\n` em variáveis de template | **NÃO FUNCIONA** | n8n Community, Manychat, Zapier |
+| `\n` em mensagem free-form | Funciona normalmente | — |
+| Formatação no body | `*negrito*` `_itálico_` `~tachado~` | WhatsApp Help Center |
+| Custo utility (BR) | ~$0.0068/msg | Rate card via flowcall.co |
+| Custo marketing (BR) | ~$0.0625/msg (~9x mais caro) | Rate card via flowcall.co |
+| Conversa de serviço | **Grátis e ilimitada** (desde Nov/2024) | Meta — Updates to Pricing |
+| Janela de serviço | 24h (só user abre) | Meta — Send Messages |
+| Entry-point (ads) | 72h grátis | WhatsApp Business Pricing |
+| Aprovação de template | Minutos a 24h | Infobip |
+| API version atual | **v25.0** (Fev 2026) | Graph API Changelog |
+
+---
+
+## 8. Fontes Completas
+
+| # | Fonte | URL |
+|---|---|---|
+| 1 | Meta — Pricing | https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing |
+| 2 | Meta — Updates to Pricing | https://developers.facebook.com/docs/whatsapp/pricing/updates-to-pricing/ |
+| 3 | Meta — Template Categorization | https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/template-categorization |
+| 4 | Meta — Send Messages | https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/send-messages |
+| 5 | Meta — Send Message Templates | https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-message-templates/ |
+| 6 | Meta — New Template Guidelines | https://developers.facebook.com/docs/whatsapp/updates-to-pricing/new-template-guidelines/ |
+| 7 | Meta — Get Opt-in | https://developers.facebook.com/documentation/business-messaging/whatsapp/getting-opt-in |
+| 8 | WhatsApp Business Pricing | https://business.whatsapp.com/products/platform-pricing |
+| 9 | WhatsApp Business Policy | https://business.whatsapp.com/policy |
+| 10 | WhatsApp Help Center — Formatting | https://faq.whatsapp.com/539178204879377/?cms_platform=web |
+| 11 | Graph API Changelog | https://developers.facebook.com/docs/graph-api/changelog |
+| 12 | 8x8 — Template Components Reference | https://developer.8x8.com/connect/docs/whatsapp/template-components-reference/ |
+| 13 | Wati.io — Template Guidelines | https://support.wati.io/en/articles/11463458-whatsapp-template-message-guidelines-naming-formatting-and-translations |
+| 14 | Infobip — Template Compliance | https://www.infobip.com/docs/whatsapp/compliance/template-compliance |
+| 15 | n8n Community — WhatsApp line break | https://community.n8n.io/t/whatsapp-api-line-break/200174 |
+| 16 | Manychat — Line break issue | https://community.manychat.com/general-q-a-43/issue-with-line-breaks-in-custom-fields-via-whatsapp-templates-4780 |
+| 17 | Zapier — Line breaks not working | https://community.zapier.com/troubleshooting-99/line-breaks-not-working-in-whatsapp-notifications-causing-error-100-47030 |
+| 18 | Rate Card BR (flowcall.co) | https://www.flowcall.co/blog/whatsapp-business-api-pricing-2026 |
+| 19 | yCloud — Category Guidelines Update | https://www.ycloud.com/blog/whatsapp-api-message-template-category-guidelines-update/ |
