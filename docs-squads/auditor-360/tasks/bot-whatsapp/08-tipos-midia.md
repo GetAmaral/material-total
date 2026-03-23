@@ -13,15 +13,20 @@ O WhatsApp permite enviar diversos tipos de mensagem além de texto. O roteador 
 
 ### Testabilidade por tipo
 
-| Tipo | Testável via webhook DEV? | Por que |
-|------|--------------------------|---------|
+| Tipo | Testável end-to-end? | Por que |
+|------|---------------------|---------|
+| **Texto normal** | ✅ SIM | Payload com `type: text`. Webhook processa normalmente. |
 | **Forwarded text** | ✅ SIM | É `type: text` com `context.forwarded: true`. Webhook processa normalmente. |
 | **Reply/quoted text** | ✅ SIM | É `type: text` com `context.quoted_message_id`. Webhook processa normalmente. |
-| **Sticker** | ⚠️ PARCIAL | Payload chega com `type: sticker`. O Switch avalia o type ANTES de tentar download. Se Switch não tem branch pra sticker → testa se crasha ou tem fallback. Media ID fake não importa — o teste é sobre o Switch, não o download. |
-| **Reaction** | ⚠️ PARCIAL | Payload tem estrutura diferente (sem campo `text`). Testa se o webhook trigger aceita ou rejeita. |
-| **Location** | ⚠️ PARCIAL | `type: location` com lat/long. Testa se Switch tem fallback. Não precisa de dados reais. |
-| **Video** | ⚠️ PARCIAL | Mesmo caso do sticker — testa o Switch, não o conteúdo. |
-| **Contacts** | ⚠️ PARCIAL | `type: contacts` com dados de contato. Testa o Switch. |
+| **Audio** | ❌ NÃO | Precisa de MEDIA_ID real da Meta API pra download. N8N tenta GET no media URL → falha. Whisper nunca recebe nada. |
+| **Image/Document** | ❌ NÃO | Mesma limitação — MEDIA_ID fake não permite download real. OCR/Vision nunca executa. |
+| **Sticker** | ⚠️ SÓ SWITCH | Testa se o Switch do Main tem fallback pro type. Media ID fake não importa — o Switch avalia type ANTES do download. |
+| **Reaction** | ⚠️ SÓ SWITCH | Estrutura diferente (sem campo `text`). Testa se webhook/Switch aceita ou crasha. |
+| **Video** | ⚠️ SÓ SWITCH | Mesmo que sticker — testa o Switch, não o conteúdo. |
+| **Location** | ⚠️ SÓ SWITCH | Testa se Switch tem fallback. |
+| **Contacts** | ⚠️ SÓ SWITCH | Testa se Switch tem fallback. |
+
+> **RESUMO:** Apenas `type: text` (normal, forwarded, reply) é testável end-to-end. Todos os outros tipos (audio, image, sticker, video, location, reaction, contacts) dependem de MEDIA_ID real da Meta API ou têm estrutura incompatível. Para estes, o máximo que testamos é se o **Switch do Main crasha ou tem fallback**.
 
 ### O que realmente testamos
 
