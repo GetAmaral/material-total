@@ -188,6 +188,8 @@ CLEANUP:   DELETE /calendar?event_name=ilike.*reuni*&user_id=eq.{user_id}&create
 | AGD-B6 | Verificar duplicata | Criar mesmo evento 2x → 2 registros separados ou conflito? |
 | AGD-B7 | "marca reunião ontem às 10h" | Evento no passado: aceita ou recusa? Se criou → date_spent no passado é intencional? Documentar comportamento. |
 | AGD-B8 | SETUP: criar evento amanhã 14h. TESTE: "marca dentista amanhã 14h" | Conflito de horário: IA avisa sobre conflito? Cria em cima? Sugere outro horário? Documentar comportamento. |
+| AGD-B9 | MSG1: "marca reunião" → pollar → MSG2: "amanhã às 14h" | Multi-turno agenda: IA pede detalhes na MSG1, registra na MSG2. calendar: +1, start=amanhã 14:00. Se não criou → contexto perdido. |
+| AGD-B10 | MSG1: "me lembra de algo" → pollar → MSG2: "tomar remédio às 9h" | Multi-turno lembrete: IA pede detalhes, registra na segunda msg. calendar: +1, tipo=lembrete. |
 
 **🔴 Complete (Broad + 4 testes):**
 

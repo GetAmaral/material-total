@@ -150,6 +150,7 @@ CLEANUP: DELETE /calendar?id=eq.{EVENT_ID}
 | DEL-B4 | Confirmar com "sim" ou "1" | Se IA perguntou qual excluir |
 | DEL-B5 | Google sync após exclusão | Evento sumiu do Google? |
 | DEL-B6 | SETUP: criar evento "reunião" com lembrete (due_at). TESTE: "apaga a reunião" | Cascade: evento deletado E lembrete associado deletado. Verificar: não sobra registro órfão com reminder=true e due_at pendente. |
+| DEL-B7 | MSG1: "cancela" → pollar (IA pergunta "qual?") → MSG2: "a reunião" | Multi-turno exclusão: IA pede clarificação, user confirma. calendar: -1 após MSG2. |
 
 **🔴 Complete (Broad + 2 testes):**
 

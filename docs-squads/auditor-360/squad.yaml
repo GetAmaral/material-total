@@ -1,6 +1,6 @@
 name: "auditor-360"
 version: "1.0.0"
-description: "Squad de auditoria end-to-end do Total Assistente. Executa testes com verificação real no banco (Supabase) e no N8N, seguindo metodologias personalizadas por funcionalidade. 24 funcionalidades cobertas em 7 categorias."
+description: "Squad de auditoria end-to-end do Total Assistente. Executa testes com verificação real no banco (Supabase) e no N8N, seguindo metodologias personalizadas por funcionalidade. 27 funcionalidades cobertas em 7 categorias."
 author: "AIOS-Total"
 license: MIT
 slashPrefix: auditor
@@ -23,13 +23,16 @@ components:
     - tasks/agenda/04-exclusao-compromissos.md
     - tasks/agenda/06-lembretes-recorrentes.md
     - tasks/agenda/07-agenda-diaria-automatica.md
-    # Bot WhatsApp (6)
+    # Bot WhatsApp (9)
     - tasks/bot-whatsapp/01-roteador-principal.md
     - tasks/bot-whatsapp/02-fluxo-premium.md
     - tasks/bot-whatsapp/03-fluxo-standard.md
     - tasks/bot-whatsapp/04-transcricao-audio.md
     - tasks/bot-whatsapp/05-ocr-imagem-pdf.md
     - tasks/bot-whatsapp/06-bot-guard.md
+    - tasks/bot-whatsapp/07-conversa-generica.md
+    - tasks/bot-whatsapp/08-tipos-midia.md
+    - tasks/bot-whatsapp/09-multi-intencao.md
     # Autenticação (5)
     - tasks/autenticacao/01-login-otp.md
     - tasks/autenticacao/02-google-oauth.md
