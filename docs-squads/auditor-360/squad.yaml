@@ -1,0 +1,106 @@
+name: "auditor-360"
+version: "1.0.0"
+description: "Squad de auditoria end-to-end do Total Assistente. Executa testes com verificação real no banco (Supabase) e no N8N, seguindo metodologias personalizadas por funcionalidade. 24 funcionalidades cobertas em 7 categorias."
+author: "AIOS-Total"
+license: MIT
+slashPrefix: auditor
+
+aios:
+  minVersion: "2.1.0"
+  type: squad
+
+components:
+  agents:
+    - agents/auditor.md
+    - agents/investigador.md
+  tasks:
+    # Financeiro (1)
+    - tasks/financeiro/01-despesas-receitas.md
+    # Agenda (6)
+    - tasks/agenda/01-agendamento-proprio.md
+    - tasks/agenda/02-consulta-compromissos.md
+    - tasks/agenda/03-modificacao-compromissos.md
+    - tasks/agenda/04-exclusao-compromissos.md
+    - tasks/agenda/06-lembretes-recorrentes.md
+    - tasks/agenda/07-agenda-diaria-automatica.md
+    # Bot WhatsApp (6)
+    - tasks/bot-whatsapp/01-roteador-principal.md
+    - tasks/bot-whatsapp/02-fluxo-premium.md
+    - tasks/bot-whatsapp/03-fluxo-standard.md
+    - tasks/bot-whatsapp/04-transcricao-audio.md
+    - tasks/bot-whatsapp/05-ocr-imagem-pdf.md
+    - tasks/bot-whatsapp/06-bot-guard.md
+    # Autenticação (5)
+    - tasks/autenticacao/01-login-otp.md
+    - tasks/autenticacao/02-google-oauth.md
+    - tasks/autenticacao/03-2fa-legado.md
+    - tasks/autenticacao/04-rbac-planos.md
+    - tasks/autenticacao/05-gestao-conta.md
+    # Pagamentos (3)
+    - tasks/pagamentos/01-hotmart-webhook.md
+    - tasks/pagamentos/02-checkout-planos.md
+    - tasks/pagamentos/03-gestao-assinatura.md
+    # Investimentos (1)
+    - tasks/investimentos/01-portfolio.md
+    # Relatórios (2)
+    - tasks/relatorios/01-relatorio-pdf-whatsapp.md
+    - tasks/relatorios/02-export-frontend.md
+  workflows: []
+  checklists:
+    - checklists/auditoria-360-checklist.md
+  templates: []
+  tools: []
+  scripts: []
+
+config:
+  extends: none
+
+dependencies:
+  node: []
+  python: []
+  squads:
+    - testador-n8n
+
+requires:
+  n8n_dev:
+    url: "http://76.13.172.17:5678"
+    api_url: "http://76.13.172.17:5678/api/v1"
+    api_key_env: "N8N_DEV_API_KEY"
+    webhook_url: "http://76.13.172.17:5678/webhook/dev-whatsapp"
+    version: "2.11.2"
+    policy: "read-write"
+    scope: "DEV ONLY"
+  supabase_principal:
+    mode: "read-write"
+    scope: "Verificação de dados — SELECT + INSERT/DELETE de dados de teste"
+    project_ref: "ldbdtakddxznfridsarn"
+    url: "https://ldbdtakddxznfridsarn.supabase.co"
+    key_type: "service_role"
+    key_env_var: "SUPABASE_PRINCIPAL_SERVICE_KEY"
+  supabase_ai_messages:
+    mode: "read-write"
+    scope: "Logs de mensagens e respostas da IA"
+    project_ref: "hkzgttizcfklxfafkzfl"
+    url: "https://hkzgttizcfklxfafkzfl.supabase.co"
+    key_type: "service_role"
+    key_env_var: "SUPABASE_AI_MESSAGES_SERVICE_KEY"
+
+guardrails:
+  mode: "dev-write-prod-block"
+  severity: "BLOCK"
+  description: "Squad de auditoria opera no DEV. Pode enviar webhooks, ler/escrever no Supabase (dados de teste), consultar N8N API. Acesso a producao BLOQUEADO."
+  rules:
+    - "NUNCA acessar n8n.totalassistente.com.br ou 188.245.190.178"
+    - "SEMPRE usar webhook de DEV (http://76.13.172.17:5678)"
+    - "Dados de teste com user Luiz Felipe (554391936205)"
+    - "Todo output em squads/auditor-360/output/"
+    - "Quando teste FALHA: executar protocolo de diagnóstico (5 camadas)"
+
+tags:
+  - audit
+  - testing
+  - n8n
+  - supabase
+  - end-to-end
+  - total-assistente
+  - dev-environment
