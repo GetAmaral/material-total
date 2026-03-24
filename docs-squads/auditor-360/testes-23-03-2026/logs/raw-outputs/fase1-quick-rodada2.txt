@@ -1,0 +1,38 @@
+============================================================
+FASE 1 — QUICK SMOKE | 2026-03-23 23:19 UTC
+============================================================
+
+--- BLOCO A: CONVERSA GENERICA ---
+  ❌ GEN-Q1: FAIL timeout
+  ❌ GEN-Q2: FAIL timeout
+  ❌ GEN-Q3: FAIL timeout
+  ❌ GEN-Q4: FAIL timeout
+
+--- BLOCO B: FINANCEIRO ---
+  ❌ FIN-Q1: FAIL delta=0, AI=TIMEOUT
+  ❌ FIN-Q2: FAIL delta=0
+  ⏭️ FIN-Q3: BLOCKED Q1 falhou
+  ⏭️ FIN-Q4: BLOCKED Q1 falhou
+  ⏭️ FIN-Q5: BLOCKED Q1 falhou
+  ⚠️ FIN-Q6: PARTIAL delta=0
+
+--- BLOCO C: AGENDA ---
+  ❌ AGD-Q1: FAIL delta=0
+  ❌ AGD-Q2: FAIL delta=0
+  ❌ AGD-Q3: FAIL delta=0
+  ❌ AGD-Q4: FAIL timeout
+  ✅ AGD-Q5: PASS tz=America/Sao_Paulo, start=2026-03-23T18:00:00
+
+--- BLOCO C2: CONSULTA ---
+  ❌ CON-Q1: FAIL timeout
+  ❌ CON-Q2: FAIL timeout
+  ❌ CON-Q3: FAIL timeout
+  ❌ CON-Q4: FAIL timeout ou criou registro
+
+--- BLOCO C3: MODIFICACAO ---
+  ❌ MOD-Q1: FAIL sem resposta ou registro
+  ❌ MOD-Q2: FAIL sem resposta ou registro
+  ✅ MOD-Q3: PASS name=Alinhamento Semanal, active=True
+
+--- BLOCO C4: EXCLUSAO ---
+  ❌ DEL-Q1: FAIL cal não diminuiu: 339→339

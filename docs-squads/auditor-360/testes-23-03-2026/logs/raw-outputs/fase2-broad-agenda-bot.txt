@@ -1,0 +1,103 @@
+============================================================
+FASE 2 BROAD — AGENDA (20 testes)
+============================================================
+
+--- AGD-B1: Horário com minutos ---
+  ✅ AGD-B1: PASS start=2026-03-25T10:30:00
+
+--- AGD-B2: Duração customizada ---
+  ✅ AGD-B2: PASS start=2026-03-25T14:00, end=2026-03-25T16:00
+
+--- AGD-B3: Evento hoje ---
+  ✅ AGD-B3: PASS start=2026-03-24T19:00:00, today=2026-03-24
+
+--- AGD-B4: Evento no passado ---
+  ❌ AGD-B4: FAIL não criou e não avisou: 'essa mensagem não parece ser sobre agenda.'
+
+--- AGD-B5: Conflito de horário ---
+  ⚠️ AGD-B5: PARTIAL criou sem avisar conflito (cal +1)
+
+--- AGD-B6: Multi-turno agendamento ---
+  ✅ AGD-B6: PASS multi-turno: perguntou quando → criou
+
+--- AGD-B7: Nome longo ---
+  ✅ AGD-B7: PASS name='Apresentação Do Projeto Final De Engenharia De Software'
+
+--- AGD-B8: Evento em inglês ---
+  ✅ AGD-B8: PASS entendeu inglês: name=Meeting
+
+--- CON-B1: Buscar por nome ---
+  ✅ CON-B1: PASS encontrou por nome
+
+--- CON-B2: Range de datas ---
+  ✅ CON-B2: PASS respondeu range
+
+--- MOD-B1: Editar com data relativa ---
+  ✅ MOD-B1: PASS start=2026-03-27T14:00:00
+
+--- MOD-B2: Editar recorrente ---
+  ✅ MOD-B2: PASS start=2026-03-25T09:00:00, is_recurring=True
+
+--- DEL-B1: Excluir ambíguo (múltiplos) ---
+  ⚠️ DEL-B1: PARTIAL pediu clarificação (vários resultados)
+
+--- DEL-B2: Multi-turno exclusão ---
+  ⚠️ DEL-B2: PARTIAL workshop ainda existe. AI2: Não encontrei o evento "Workshop" para amanhã. Se quiser, me mande a data ou o h
+
+============================================================
+FASE 2 BROAD — BOT WHATSAPP (8 testes)
+============================================================
+
+--- GEN-B1: Saudação natural ---
+  ✅ GEN-B1: PASS saudação ok, zero side effects
+
+--- GEN-B2: Pedido de ajuda ---
+  ✅ GEN-B2: PASS explicou funcionalidades
+
+--- GEN-B3: Input em inglês ---
+  ✅ GEN-B3: PASS respondeu: 'Posso te ajudar a organizar sua agenda e registrar seus gastos e receitas. També'
+
+--- GEN-B4: Garbage input ---
+  ✅ GEN-B4: PASS garbage tratado sem side effects
+
+--- GEN-B5: Solo emoji ---
+  ✅ GEN-B5: PASS emoji tratado sem side effects
+
+--- MID-B1: Payload áudio ---
+  ⚠️ MID-B1: PARTIAL sem resposta (pode ser by design)
+
+--- MID-B2: Payload imagem ---
+  ✅ MID-B2: PASS imagem tratada sem side effects
+
+--- MID-B3: Payload documento ---
+  ✅ MID-B3: PASS documento tratado sem side effects
+
+============================================================
+SUMÁRIO BROAD — AGENDA + BOT
+============================================================
+Total: 22 | PASS: 17 | FAIL: 1 | PARTIAL: 4
+  ✅ AGD-B1: start=2026-03-25T10:30:00
+  ✅ AGD-B2: start=2026-03-25T14:00, end=2026-03-25T16:00
+  ✅ AGD-B3: start=2026-03-24T19:00:00, today=2026-03-24
+  ❌ AGD-B4: não criou e não avisou: 'essa mensagem não parece ser sobre agenda.'
+  ⚠️ AGD-B5: criou sem avisar conflito (cal +1)
+  ✅ AGD-B6: multi-turno: perguntou quando → criou
+  ✅ AGD-B7: name='Apresentação Do Projeto Final De Engenharia De Software'
+  ✅ AGD-B8: entendeu inglês: name=Meeting
+  ✅ CON-B1: encontrou por nome
+  ✅ CON-B2: respondeu range
+  ✅ MOD-B1: start=2026-03-27T14:00:00
+  ✅ MOD-B2: start=2026-03-25T09:00:00, is_recurring=True
+  ⚠️ DEL-B1: pediu clarificação (vários resultados)
+  ⚠️ DEL-B2: workshop ainda existe. AI2: Não encontrei o evento "Workshop" para amanhã. Se quiser, me mande a data ou o h
+  ✅ GEN-B1: saudação ok, zero side effects
+  ✅ GEN-B2: explicou funcionalidades
+  ✅ GEN-B3: respondeu: 'Posso te ajudar a organizar sua agenda e registrar seus gastos e receitas. També'
+  ✅ GEN-B4: garbage tratado sem side effects
+  ✅ GEN-B5: emoji tratado sem side effects
+  ⚠️ MID-B1: sem resposta (pode ser by design)
+  ✅ MID-B2: imagem tratada sem side effects
+  ✅ MID-B3: documento tratado sem side effects
+
+--- CLEANUP ---
+Done.

@@ -1,0 +1,84 @@
+============================================================
+FASE 1 — QUICK SMOKE | 2026-03-23 22:52 UTC
+============================================================
+
+--- BLOCO A: CONVERSA GENERICA ---
+  ✅ GEN-Q1: PASS "Oi! 😊 Como posso te ajudar hoje?"
+  ✅ GEN-Q2: PASS "Eu te ajudo com sua agenda e com o registro de gastos e receitas. Posso criar, buscar, editar e excluir eventos, além de"
+  ✅ GEN-Q3: PASS "De nada! Fico à disposição se precisar 😊"
+  ✅ GEN-Q4: PASS "Haha 😄 Se precisar de algo da agenda ou dos gastos, é só me chamar."
+
+--- BLOCO B: FINANCEIRO ---
+  ✅ FIN-Q1: PASS spent +1, value=35, cat=Alimentacao
+  ✅ FIN-Q2: PASS spent +1, type=entrada, value=500
+  ❌ FIN-Q3: FAIL timeout
+  ❌ FIN-Q4: FAIL value_spent=35, esperado 42
+  ✅ FIN-Q5: PASS spent -1
+  ✅ FIN-Q6: PASS apenas 1 registro (deduplicação ok)
+
+--- BLOCO C: AGENDA ---
+  ✅ AGD-Q1: PASS cal +1, name=Reunião, start=2026-03-24T14:00, end=2026-03-24T14:30
+  ❌ AGD-Q2: FAIL delta=1
+  ✅ AGD-Q3: PASS cal +1, start=2026-03-28T09:00
+  ⚠️ AGD-Q4: PARTIAL IA pediu horário? 'Quer que eu coloque isso como lembrete na agenda?'
+  ✅ AGD-Q5: PASS tz=America/Sao_Paulo, start=2026-03-24T15:00:00
+
+--- BLOCO C2: CONSULTA ---
+  ❌ CON-Q1: FAIL timeout
+  ❌ CON-Q2: FAIL timeout
+  ❌ CON-Q3: FAIL timeout
+  ❌ CON-Q4: FAIL timeout ou criou registro
+
+--- BLOCO C3: MODIFICACAO ---
+  ❌ MOD-Q1: FAIL sem resposta ou registro
+  ❌ MOD-Q2: FAIL sem resposta ou registro
+  ✅ MOD-Q3: PASS name=Alinhamento Semanal, active=True
+
+--- BLOCO C4: EXCLUSAO ---
+  ❌ DEL-Q1: FAIL cal não diminuiu: 342→342
+  ❌ DEL-Q2: FAIL cal não diminuiu: 342→342
+  ❌ DEL-Q3: FAIL timeout ou cal mudou
+
+--- BLOCO C5: RECORRENTES ---
+  ❌ REC-Q1: FAIL reg=NONE
+  ✅ REC-Q2: PASS is_recurring=true
+  ✅ REC-Q3: PASS yoga removida/desativada
+  ✅ REC-Q4: PASS exatamente 1 registro
+
+--- BLOCO D: RELATORIOS ---
+  ❌ REL-Q1: FAIL timeout
+  ❌ REL-Q2: FAIL timeout
+
+--- BLOCO E: MIDIA + MULTI ---
+  ❌ MID-Q3: FAIL timeout
+  ❌ MULTI-Q1: FAIL timeout
+
+============================================================
+SUMÁRIO FASE 1 — QUICK SMOKE
+============================================================
+Total: 33 | PASS: 15 | FAIL: 17 | PARTIAL: 1 | BLOCKED: 0
+Taxa de sucesso: 15/33 (45%)
+
+FAILS:
+  ❌ FIN-Q3: timeout
+  ❌ FIN-Q4: value_spent=35, esperado 42
+  ❌ AGD-Q2: delta=1
+  ❌ CON-Q1: timeout
+  ❌ CON-Q2: timeout
+  ❌ CON-Q3: timeout
+  ❌ CON-Q4: timeout ou criou registro
+  ❌ MOD-Q1: sem resposta ou registro
+  ❌ MOD-Q2: sem resposta ou registro
+  ❌ DEL-Q1: cal não diminuiu: 342→342
+  ❌ DEL-Q2: cal não diminuiu: 342→342
+  ❌ DEL-Q3: timeout ou cal mudou
+  ❌ REC-Q1: reg=NONE
+  ❌ REL-Q1: timeout
+  ❌ REL-Q2: timeout
+  ❌ MID-Q3: timeout
+  ❌ MULTI-Q1: timeout
+PARTIALS:
+  ⚠️ AGD-Q4: IA pediu horário? 'Quer que eu coloque isso como lembrete na agenda?'
+
+--- CLEANUP ---
+Dados de teste removidos.
