@@ -107,5 +107,35 @@ O sistema está **pronto para uso** com as seguintes ressalvas:
 
 ---
 
+---
+
+## AUTOCRÍTICA: POR QUE A FASE 3 TEVE A MAIOR TAXA?
+
+A Fase 3 (Complete) registrou 96% — mais alta que Quick (85%) e Broad (67%). Isso é um **defeito no design dos testes**, não mérito do sistema.
+
+### Motivos:
+
+1. **Segurança/Stress testam "não crashar", não "funcionar certo"** — o critério é binário (crashou ou não). Um sistema minimamente robusto passa 100%. São testes defensivos, não funcionais.
+
+2. **Edge cases escolhidos foram previsíveis demais** — "valor por extenso", "mistura de idiomas", "piada" são coisas que um LLM lida bem naturalmente. Não forçaram os limites reais.
+
+3. **Faltaram testes HARD que realmente estressam:**
+   - Fluxos completos de 5+ mensagens encadeadas
+   - Edições simultâneas no mesmo registro
+   - Operações conflitantes (editar + excluir o mesmo item ao mesmo tempo)
+   - Concorrência real (2 "usuários" ao mesmo tempo)
+   - Timeouts de API do Google Calendar
+   - Dados corrompidos ou inconsistentes no banco
+
+4. **O Broad foi a fase mais reveladora** porque testa o que o user REALMENTE faz no dia-a-dia — gírias, multi-turno, "ontem", exclusão ambígua. Essas situações cotidianas são as que quebram.
+
+### Conclusão:
+
+O Complete testou **resistência** ("o sistema não quebra?"), quando deveria ter testado **correção sob pressão** ("o sistema faz certo em cenários complexos?"). A taxa de 96% não reflete a maturidade real do sistema — a taxa do Broad (67%) é um indicador mais honesto da experiência do usuário final.
+
+**Score ajustado recomendado:** considerar o Broad como referência principal para decisões de go/no-go.
+
+---
+
 *Auditoria completa — Auditor-360 | 3 fases | 97 testes | 2026-03-24*
 *Executor: Claude Opus 4.6 | Ambiente: N8N DEV*
