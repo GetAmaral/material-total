@@ -29,7 +29,39 @@ Extraido de **business.whatsapp.com/products/platform-pricing**:
 **Service e utility em resposta sao gratis:**
 > *"We do not charge for service messages, or for utility messages businesses send in response to users."*
 
-**[NAO VERIFICADO OFICIALMENTE]** Valores exatos por pais (o rate card em business.whatsapp.com e renderizado via JavaScript e nao pode ser extraido estaticamente). Para consultar valores, acesse: https://business.whatsapp.com/products/platform-pricing e selecione o pais manualmente.
+**[NAO VERIFICADO OFICIALMENTE]** Valores exatos por pais (o rate card em business.whatsapp.com e renderizado via JavaScript e nao pode ser extraido estaticamente). Para consultar valores atualizados, acesse: https://business.whatsapp.com/products/platform-pricing e selecione o pais manualmente.
+
+### 1.3 Estimativa de custo mensal (Brasil)
+
+**[NAO VERIFICADO OFICIALMENTE]** Os valores abaixo vem de BSPs (Business Solution Providers) que espelham o rate card da Meta. Duas faixas foram encontradas:
+
+| Categoria | Jul/2025 (USD) | Jan/2026 (USD) |
+|---|---|---|
+| Marketing | $0.0625/msg | $0.07188/msg |
+| Utility | $0.0068/msg | $0.00782/msg |
+| Authentication | $0.0068/msg | $0.00782/msg |
+| Service | Gratis | Gratis |
+| Utility em resposta ao user | Gratis | Gratis |
+
+> Fontes: FlowCall, EngageLab (Jul/2025); SleekFlow (Jan/2026). Todos citam o rate card oficial da Meta.
+
+**Simulacao: 1 mensagem proativa por dia, 30 dias (usando valores Jan/2026):**
+
+| Cenario | Por user/mes | 100 users/mes | 500 users/mes | 1.000 users/mes |
+|---|---|---|---|---|
+| **Utility proativo** | $0.23 | $23.46 | $117.30 | $234.60 |
+| **Marketing proativo** | $2.16 | $215.64 | $1.078,20 | $2.156,40 |
+| **Utility em resposta** | **Gratis** | **Gratis** | **Gratis** | **Gratis** |
+
+> Calculo: 30 msgs x $0.00782 = $0.2346/user/mes (utility) | 30 msgs x $0.07188 = $2.1564/user/mes (marketing)
+
+**Comparacao direta:**
+- Marketing custa **~9.2x mais** que utility
+- Utility em resposta ao user (dentro da janela de servico) e **gratis**
+- Usando a Opcao C recomendada (template curto → user responde → free-form gratis), o custo e de **1 utility por dia por user = ~$0.23/user/mes**
+- Se o user responder ao template, o restante da interacao (lista completa) sai **gratis**
+
+**Nota sobre volume tiers:** A Meta oferece desconto por volume (*"As businesses send more messages on WhatsApp, they can unlock more attractive pricing via our volume tiers."* — business.whatsapp.com). Os thresholds por pais nao estao publicamente documentados.
 
 ### 1.3 Limites tecnicos do template
 
